@@ -1,18 +1,17 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/post/{id}', [HomeController::class, 'show'])->name('post.show');
 
 Auth::routes();
 
-Route::get(uri:'/home',action: [App\Http\Controllers\HomeController::class, 'index'])->name(name:'home');
-
-// Route::get('home2',function(){
-//     return "hello world";
-// });
-Route::resource(name:'users',controller:UserController::class);
-// Route::get('users',[UserController::class,'index']);
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+       Route::resource('users', UserController::class)->except(['create', 'show']);
+       Route::resource('posts', PostController::class)->except(['create', 'show']);
+});

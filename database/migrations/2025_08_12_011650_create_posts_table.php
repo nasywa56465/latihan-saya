@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('slug')->unique();
             $table->boolean('is_published')->default(false);
-            $table->timestamp('published_at')->nullable();
+           $table->timestamp('published_at')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
         });

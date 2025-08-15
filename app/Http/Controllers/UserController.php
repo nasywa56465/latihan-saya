@@ -1,21 +1,22 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Requests\UserRequest;
 use App\Models\User;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index() :View
+    public function index()
     {
-         $data =  User::paginate(10);
+        $data = User::paginate(10);
 
-       return view(view: 'users.index',data: compact(var_name:'data'));
-   
+        return view('users.index', compact('data'));
     }
 
     /**
@@ -29,29 +30,21 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-       $request->validate([
-           'name' => 'required|string|max:255',
-           'email' => 'required|string|email|max:255|unique:users',
-           'password' => 'required|string|min:8',
-       ]);
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+            return redirect()->back()->with('success', 'User created successfully.');
 
-      try {
-           User::create([
-               'name' => $request->name,
-               'email' => $request->email,
-               'password' => bcrypt($request->password) ,
-           ]);
-           return redirect()->back()->with('success', 'User created successfully.');
-
-       } catch (\Exception $e) {
-           return dd($e->getMessage());
-       }
+        } catch (\Exception $e) {
+            return dd($e->getMessage());
+        }
 
     }
-
-
 
     /**
      * Display the specified resource.
@@ -66,28 +59,23 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $editUser = User::findOrFail($id);
-        $data =  User::paginate(10);
-        return view('users.index', compact('editUser', 'data'));
+        $user = User::findOrFail($id);
+        $data = User::all();
+
+        return view('users.index', compact('user', 'data'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, string $id)
     {
-        $request->validate([
-           'name' => 'required|string|max:255',
-           'email' => 'required|string|email|max:255|unique:users',
-       ]);
-
-      
-        $user = User::findOrFail($id);  
-            $user ->name= $request->name;
-            $user ->email= $request->email;
+        $user = User::findOrFail($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
         $user->save();
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('users.index');
     }
 
     /**
@@ -95,7 +83,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $user = User::findOrFail($id);  
+        $user = User::findOrFail($id);
         $user->delete();
 
         return redirect()->back();
