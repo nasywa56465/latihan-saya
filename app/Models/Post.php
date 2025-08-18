@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Str;
+use Illuminate\Support\Str;
 
 class Post extends Model
 {
@@ -42,6 +42,11 @@ class Post extends Model
         return Attribute::make(
             get: fn ($value) => asset('storage/' . $value),
         );
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 
 }

@@ -16,20 +16,14 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
-
-    {{-- Tambahan: Bootstrap Icons untuk icon user & logout --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 
 <body>
     <div id="app">
-        <!-- Navbar dengan warna gradien dan bayangan lembut -->
-        <nav class="navbar navbar-expand-md navbar-dark shadow-sm" style="background: linear-gradient(90deg, #0d6efd, #6610f2);"> 
-            {{-- navbar-dark agar teks terang, warna gradien biru ke ungu --}}
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand fw-bold text-white" href="{{ url('/') }}"> {{-- fw-bold agar tebal, text-white agar terang --}}
-                    <i class="bi bi-house-door-fill"></i> {{-- icon rumah di kiri brand --}}
-                    {{ config('Beranda', 'Blog') }}
+                <a class="navbar-brand" href="{{ url('/') }}">
+                    {{ config('app.name', 'Laravel') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -40,18 +34,16 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('users.index') }}">
-                                <i class="bi bi-people-fill"></i> {{-- icon users --}}
-                                Users
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('posts.index') }}">
-                                <i class="bi bi-journal-text"></i> {{-- icon post --}}
-                                Posts
-                            </a>
-                        </li>
+                        @can('edit users')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('users.index') }}">Users</a>
+                            </li>
+                        @endcan
+                        @can('edit posts')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('posts.index') }}">Posts</a>
+                            </li>
+                        @endcan
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -60,34 +52,25 @@
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" href="{{ route('login') }}">
-                                        <i class="bi bi-box-arrow-in-right"></i> {{-- icon login --}}
-                                        {{ __('Login') }}
-                                    </a>
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                 </li>
                             @endif
 
                             @if (Route::has('register'))
                                 <li class="nav-item">
-                                    <a class="nav-link text-white" href="{{ route('register') }}">
-                                        <i class="bi bi-person-plus-fill"></i> {{-- icon register --}}
-                                        {{ __('Register') }}
-                                    </a>
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" href="#" role="button"
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    <i class="bi bi-person-circle"></i> {{-- icon profil --}}
                                     {{ Auth::user()->name }}
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}" 
-                                       onclick="event.preventDefault();
-                                                document.getElementById('logout-form').submit();">
-                                        <i class="bi bi-box-arrow-right"></i> {{-- icon logout --}}
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                                     document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
 
@@ -107,4 +90,5 @@
         </main>
     </div>
 </body>
+
 </html>
